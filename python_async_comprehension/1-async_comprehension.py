@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
-"""Collect 10 random numbers from an async generator using async"""
-from typing import List
-from 0-async_generator import async_generator
+"""
+1-async_comprehension.py
+Module containing an asynchronous coroutine.
+"""
+from typing import Generator, List
+import random
+import asyncio
+
+async_generator = __import__('0-async_generator').async_generator
 
 
 async def async_comprehension() -> List[float]:
-    """Collect 10 random numbers asynchronously and return a list"""
-    return [i async for i in async_generator()]
+    """
+    Waits for 10 seconds and yields 10 numbers.
+    """
+    result: List[float] = [x async for x in async_generator()]
+    return result
