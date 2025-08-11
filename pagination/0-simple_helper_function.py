@@ -19,7 +19,7 @@ def index_range(page: int, page_size: int) -> Tuple[int, int]:
         page_size (int): Number of items per page.
 
     Returns:
-        Tuple[int, int]: A tuple of (start_index, end_index) suitable for slicing.
+        A tuple of (start_index, end_index) suitable for slicing.
     """
     start_index = (page - 1) * page_size
     end_index = page * page_size
