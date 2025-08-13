@@ -1,2 +1,2 @@
-//showing data bases 
-show dbs
+//Lists all mongo data bases 
+show databases
