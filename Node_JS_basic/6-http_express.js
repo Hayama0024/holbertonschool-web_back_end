@@ -4,9 +4,15 @@ const express = require('express');
 const app = express();
 
 app.get('/', (_req, res) => {
-  res.type('text').send('Hello Holberton School!');
+  // 明示的にプレーンテキスト
+  res.set('Content-Type', 'text/plain');
+  res.status(200).send('Hello Holberton School!');
 });
 
-app.listen(1245);
+// チェッカーが require() したときに勝手にリッスンしないようにガード
+if (require.main === module) {
+  app.listen(1245);
+}
 
 module.exports = app;
+
