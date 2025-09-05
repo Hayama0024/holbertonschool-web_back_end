@@ -2,8 +2,8 @@
 const express = require('express');
 const fs = require('fs');
 
-const DB_PATH = process.argv[2];
 const app = express();
+const DB_PATH = process.argv[2];
 
 function readDatabase(path) {
   return new Promise((resolve, reject) => {
@@ -12,13 +12,12 @@ function readDatabase(path) {
         reject(new Error('Cannot load the database'));
         return;
       }
-
       const lines = data
         .split('\n')
         .map((l) => l.trim())
         .filter((l) => l.length > 0);
 
-      const [, ...rows] = lines;
+      const [, ...rows] = lines; // ヘッダ除去
       const students = rows
         .map((r) => r.split(','))
         .filter((cols) => cols.length >= 4);
@@ -37,25 +36,30 @@ function readDatabase(path) {
 }
 
 app.get('/', (_req, res) => {
-  res.type('text').send('Hello Holberton School!');
+  res.set('Content-Type', 'text/plain; charset=utf-8');
+  res.status(200).send('Hello Holberton School!');
 });
 
 app.get('/students', async (_req, res) => {
-  res.type('text');
+  res.set('Content-Type', 'text/plain; charset=utf-8');
+
   let body = 'This is the list of our students';
   try {
     const { total, fields } = await readDatabase(DB_PATH);
     body += `\nNumber of students: ${total}`;
+    // insertion order を保持（CSVに従い CS → SWE）
     for (const [field, list] of Object.entries(fields)) {
       body += `\nNumber of students in ${field}: ${list.length}. List: ${list.join(', ')}`;
     }
-    res.send(body);
   } catch (err) {
     body += `\n${err.message}`;
-    res.send(body);
   }
+
+  res.status(200).send(body);
 });
 
-app.listen(1245);
+if (require.main === module) {
+  app.listen(1245);
+}
 
 module.exports = app;
