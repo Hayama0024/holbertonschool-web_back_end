@@ -1,25 +1,61 @@
+// 7-http_express.js
 const express = require('express');
-const countStudents = require('./3-read_file_async');
+const fs = require('fs');
 
+const DB_PATH = process.argv[2];
 const app = express();
-const port = 1245;
 
-app.get('/', (req, res) => {
-  res.set('Content-Type', 'text/plain');
-  res.send('Hello Holberton School!');
+function readDatabase(path) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, 'utf8', (err, data) => {
+      if (err) {
+        reject(new Error('Cannot load the database'));
+        return;
+      }
+
+      const lines = data
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0);
+
+      const [, ...rows] = lines;
+      const students = rows
+        .map((r) => r.split(','))
+        .filter((cols) => cols.length >= 4);
+
+      const fields = {};
+      for (const cols of students) {
+        const firstname = cols[0];
+        const field = cols[3];
+        if (!fields[field]) fields[field] = [];
+        fields[field].push(firstname);
+      }
+
+      resolve({ total: students.length, fields });
+    });
+  });
+}
+
+app.get('/', (_req, res) => {
+  res.type('text').send('Hello Holberton School!');
 });
 
-app.get('/students', (req, res) => {
-  const file = process.argv[2];
-
-  res.set('Content-Type', 'text/plain');
-  countStudents(file)
-    .then((data) => res.send(`This is the list of our students\n${data}`))
-    .catch((err) => res.send(`This is the list of our students\n${err.message}`));
+app.get('/students', async (_req, res) => {
+  res.type('text');
+  let body = 'This is the list of our students';
+  try {
+    const { total, fields } = await readDatabase(DB_PATH);
+    body += `\nNumber of students: ${total}`;
+    for (const [field, list] of Object.entries(fields)) {
+      body += `\nNumber of students in ${field}: ${list.length}. List: ${list.join(', ')}`;
+    }
+    res.send(body);
+  } catch (err) {
+    body += `\n${err.message}`;
+    res.send(body);
+  }
 });
 
-app.listen(port, () => {
-  console.log('Server running at http://localhost:1245/');
-});
+app.listen(1245);
 
 module.exports = app;
