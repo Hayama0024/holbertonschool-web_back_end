@@ -17,7 +17,7 @@ function readDatabase(path) {
         .map((l) => l.trim())
         .filter((l) => l.length > 0);
 
-      const [, ...rows] = lines;
+      const [, ...rows] = lines; // 先頭はヘッダ
       const students = rows
         .map((r) => r.split(','))
         .filter((cols) => cols.length >= 4);
@@ -36,20 +36,20 @@ function readDatabase(path) {
 }
 
 const app = http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'text/plain');
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 
   if (req.url === '/') {
-    res.statusCode = 200;
     res.end('Hello Holberton School!');
     return;
   }
 
   if (req.url === '/students') {
-    res.statusCode = 200;
     let body = 'This is the list of our students';
     readDatabase(DB_PATH)
       .then(({ total, fields }) => {
         body += `\nNumber of students: ${total}`;
+        // 5番では順序要件なし（CSVの出現順でOK：CS → SWE）
         for (const [field, list] of Object.entries(fields)) {
           body += `\nNumber of students in ${field}: ${list.length}. List: ${list.join(', ')}`;
         }
@@ -62,11 +62,11 @@ const app = http.createServer((req, res) => {
     return;
   }
 
-  // 仕様では未定義だがプレーンテキストを返す
-  res.statusCode = 200;
+  // 指定のないエンドポイントはプレーンテキストで固定返答（OK）
   res.end('Hello Holberton School!');
 });
 
 app.listen(1245);
 
 module.exports = app;
+
