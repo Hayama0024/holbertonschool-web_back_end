@@ -1,0 +1,30 @@
+{
+    "name": "node_js_basic",
+    "version": "1.0.0",
+    "description": "Holberton - NodeJS Basics",
+    "main": "index.js",
+    "type": "commonjs",
+    "scripts": {
+      "lint": "eslint .",
+      "test": "jest",
+      "full-test": "npm run lint && npm test",
+      "dev": "nodemon --exec babel-node --presets @babel/preset-env ./full_server/server.js ./database.csv"
+    },
+    "dependencies": {
+      "express": "^4.19.2"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.25.2",
+      "@babel/node": "^7.25.7",
+      "@babel/preset-env": "^7.25.4",
+      "eslint": "^8.57.0",
+      "eslint-config-airbnb-base": "^15.0.0",
+      "eslint-plugin-import": "^2.29.1",
+      "jest": "^29.7.0",
+      "nodemon": "^3.1.4"
+    },
+    "engines": {
+      "node": ">=20"
+    }
+  }
+  
